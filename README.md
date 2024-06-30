@@ -1,6 +1,6 @@
-# AirChains | RPC Hatası'nı Düzeltmek için Script
+# AirChains | Spesifik Hataları Otomatik Olarak Düzeltmek için Script
 
-Bu script, log dosyamızda **"RPC hatası"** ve **"Switchyard client connection error"** hatası aldığımız anda tetiklenerek **rollback** işlemi gerçekleştirecek ve hatanın giderilmesini sağlayacaktır.
+Bu script, log dosyamızda **"RPC hatası"**, **"Switchyard client connection error"**, **"Failed to get transaction by hash: not found"**, **"Failed to Init VRF"** gibi hataları aldığımız anda tetiklenerek **rollback** işlemi gerçekleştirecek ve hatanın giderilmesini sağlayacaktır.
 
 ---
 
@@ -49,15 +49,17 @@ Betik dosyasını oluşturalım:
 nano /root/restart_stationd.sh
 ```
 Aşağıdaki içeriği 'değişiklik yapmadan' olduğu gibi yapıştıralım ve Ctrl x+y ile kaydederek çıkalım:
+
+*(Aşağıdaki kod bloğunda, ERROR_MSGS satırındaki hatalar dışındaki ekstra hataları da scripte eklemek isteyenler, hata mesajını ERROR_MSGS satırındaki örneklerde olduğu gibi "HATA_MESAJI" formatında içeriğe ekleyebilirler)*
 ```
 #!/bin/bash
 
 LOG_FILE="/root/screenlog.0"
-ERROR_MSGS=("rpc error: code = Unknown desc = rpc error: code = Unknown desc = failed to execute message; message index: 0: rpe error: code = Unavailable desc = incorrect pod number" "rpc error: code = Unknown desc" "Switchyard client connection error")
+ERROR_MSGS=("rpc error: code = Unknown desc" "Switchyard client connection error" "Failed to get transaction by hash: not found" "Failed to Init VRF")
 
 echo "Betik başlatılıyor..."
 while true; do
-    echo "Loglar kontrol ediliyor..."
+    echo "Logları kontrol ediyor..."
     # Logları kontrol et
     tail -n 50 $LOG_FILE > /root/temp_log.log  # Son 50 satırı geçici bir dosyaya yaz
     for ERROR_MSG in "${ERROR_MSGS[@]}"; do
